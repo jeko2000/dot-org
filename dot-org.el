@@ -42,26 +42,15 @@
                   "MEETING")))
 
 (setq org-todo-keyword-faces
-      '(("TODO" . (:foreground "indian red" :box nil))
-        ("STARTED" . (:foreground "orange red" :box nil))
-        ("NEXT" . (:foreground "goldenrod" :box nil))
-        ("WAITING" . (:foreground "steel blue" :box nil))
-        ("HOLD" . (:foreground "orchid" :box nil))
+      '(("TODO" . (:foreground "firebrick" :weight bold :box nil))
+        ("STARTED" . (:foreground "DarkOrange3" :weight bold :box nil))
+        ("NEXT" . (:foreground "olive drab" :weight bold :box nil))
+        ("WAITING" . (:foreground "steel blue" :weight bold :box nil))
+        ("HOLD" . (:foreground "orchid" :weight bold :box nil))
         ("DONE" . (:foreground "dim gray" :strike-through t))
-        ("CANCELED" . (:foreground "bisque4" :strike-through t))
-        ("PHONE" . (:foreground "coral"))
-        ("MEETING" . (:foreground "coral"))))
-
-
-(setq org-todo-keyword-faces
-      '(("IDEA" . (:foreground "GoldenRod" :weight bold))
-        ("NEXT" . (:foreground "IndianRed1" :weight bold))
-        ("STARTED" . (:foreground "OrangeRed" :weight bold))
-        ("WAITING" . (:foreground "coral" :weight bold))
-        ("CANCELED" . (:foreground "LimeGreen" :weight bold))
-        ("DELEGATED" . (:foreground "LimeGreen" :weight bold))
-        ("SOMEDAY" . (:foreground "LimeGreen" :weight bold))
-        ))
+        ("CANCELED" . (:foreground "dim gray" :strike-through t))
+        ("PHONE" . (:foreground "dim gray"))
+        ("MEETING" . (:foreground "dim gray"))))
 
 (setq org-log-done 'time)
 
