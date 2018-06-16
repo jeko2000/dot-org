@@ -38,7 +38,8 @@
       '((sequence "TODO(t)" "STARTED(s!)"
                   "NEXT(n)" "WAITING(w@/!)"
                   "HOLD(h@/!)" "|" "DONE(d)"
-                  "CANCELED(c@/!)" "PHONE")))
+                  "CANCELED(c@/!)" "PHONE"
+                  "MEETING")))
 
 (setq org-todo-keyword-faces
       '(("TODO" . (:foreground "indian red" :box nil))
