@@ -1,0 +1,597 @@
+#+TITLE: Org Configuration
+#+AUTHOR: Johnny Ruiz
+#+STARTUP: overview
+#+OPTIONS: toc:4
+* Introduction
+** Activation
+   We begin by setting the most important global keys.
+   #+begin_src emacs-lisp :tangle yes
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-cc" 'org-capture)
+(global-set-key "\C-cb" 'org-switchb)
+   #+end_src
+
+Then, we ensure that emacs recognizes .org, .org_archive, and even
+.txt files as org mode files.
+#+begin_src emacs-lisp :tangle yes
+(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
+#+end_src
+
+* Document structure
+** Headlines
+ It's often unnecessary to have extra empty lines between headlines in
+ collapsed view. As such, let's ask org to keep those within the branch.
+ #+begin_src emacs-lisp :tangle yes
+(setq org-cycle-separator-lines 0)
+ #+end_src
+
+Next, let's ask for the ctrl-a and ctrl-e commands to be aware of
+Headline text. Specifically, let's ask that ctrl-a brings the point to
+the beginning of the headline text, namely, after the stars and the
+optional TODO keyword. Similarly, ctrl-e will bring the point to the
+end of the headline text before any tags.
+#+begin_src emacs-lisp :tangle yes
+(setq org-special-ctrl-a/e t)
+#+end_src
+
+** Visibility cycling
+*** Initial visibility
+ Though we can set visibility per file using #+STARTUP option, let's
+ default to having all org files to OVERVIEW.
+ #+begin_src emacs-lisp :tangle yes
+(setq org-startup-folded t)
+ #+end_src
+
+*** Catching invisible edits
+As explained in the [[info:org#Catching%20invisible%20edits][manual]], you may sometimes edit an invisible part of the
+buffer. Let's ask gnus to always expose parts of the buffer being edited.
+#+begin_src emacs-lisp :tangle yes
+(setq org-catch-invisible-edits 'show)
+#+end_src
+
+** Motion
+Pressing 'C-c C-j' runs the command org-goto which is very useful at
+finding specific headlines in our document but it defaults to using
+the arrow keys for movement which is a bit slow. Let's enable the
+usual n/p and f/b (and others) in this interface.
+#+begin_src emacs-lisp :tangle yes
+(setq org-goto-auto-isearch nil)
+#+end_src
+
+** Structure editing
+When the point is in the middle of a line, org mode will split the
+line and make the rest of the line a headline upon pressing M-<RET>,
+or by running org-meta-return. Let's ask it to go to the end of the
+line before creating a new headline.
+#+begin_src emacs-lisp :tangle yes
+(setq org-M-RET-may-split-line t)
+#+end_src
+
+** Plain lists
+ I find giving sub-lists different bullets and extra
+ indentation improves their readability.
+ #+begin_src emacs-lisp :tangle yes
+(setq org-list-demote-modify-bullet '(("+" . "-") ("-" . "+"))
+      org-list-indent-offset 1)
+ #+end_src
+Next, let's ask org to treat plain lists as low-level headings so that
+visibility cycling on headlines also include plain lists.
+#+begin_src emacs-lisp :tangle yes
+(setq org-cycle-include-plain-lists 'integrate)
+#+end_src
+
+** Blocks
+By default, let's have org mode show all blocks on startup.
+#+begin_src emacs-lisp :tangle yes
+(setq org-hide-block-startup nil)
+#+end_src
+
+* Tables
+** The built-in table editor
+In case we need to export a table, let's have org export to CSV by default.
+#+begin_src emacs-lisp :tangle yes
+(setq org-table-export-default-format "orgtbl-to-csv")
+#+end_src
+
+* Hyperlinks
+** Link abbreviations
+Org mode allows the use of link abbreviations which can be quite
+handy. Let's set the org-link-abbrev-alist with ones we use.
+#+begin_src emacs-lisp :tangle yes
+(setq org-link-abbrev-alist
+      '(("duckduckgo" . "https://duckduckgo.com/?q=%h")
+        ("gnubug" . "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=")))
+#+end_src
+
+* Todo items
+** Basic TODO functionality
+It's convenient to have fast access keys for todo states. As such,
+let's enable org-use-fast-todo-selection
+#+begin_src emacs-lisp :tangle yes
+(setq org-use-fast-todo-selection t)
+#+end_src
+Next, let's ask org to ignore S-cursor changes as actual state changes.
+#+begin_src emacs-lisp :tangle yes
+(setq org-treat-S-cursor-todo-selection-as-state-change nil)
+#+end_src
+
+** Extended use of TODO keywords
+Though the default todo keywords of TODO and DONE are useful, let's
+enable a few more states useful in our workflow.
+#+begin_src emacs-lisp :tangle yes
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "STARTED(s!)"
+                  "NEXT(n)" "WAITING(w@/!)"
+                  "HOLD(h@/!)" "|" "DONE(d)"
+                  "CANCELED(c@/!)" "PHONE")))
+#+end_src
+
+** Faces for TODO keywords
+Next, let's set specific faces for our custom todo keywords
+#+begin_src emacs-lisp :tangle yes
+(setq org-todo-keyword-faces
+      '(("TODO" . (:foreground "indian red" :box nil))
+        ("STARTED" . (:foreground "orange red" :box nil))
+        ("NEXT" . (:foreground "goldenrod" :box nil))
+        ("WAITING" . (:foreground "steel blue" :box nil))
+        ("HOLD" . (:foreground "orchid" :box nil))
+        ("DONE" . (:foreground "dim gray" :strike-through t))
+        ("CANCELED" . (:foreground "bisque4" :strike-through t))
+        ("PHONE" . (:foreground "coral"))
+        ("MEETING" . (:foreground "coral"))))
+
+
+(setq org-todo-keyword-faces
+      '(("IDEA" . (:foreground "GoldenRod" :weight bold))
+        ("NEXT" . (:foreground "IndianRed1" :weight bold))
+        ("STARTED" . (:foreground "OrangeRed" :weight bold))
+        ("WAITING" . (:foreground "coral" :weight bold))
+        ("CANCELED" . (:foreground "LimeGreen" :weight bold))
+        ("DELEGATED" . (:foreground "LimeGreen" :weight bold))
+        ("SOMEDAY" . (:foreground "LimeGreen" :weight bold))
+        ))
+#+end_src
+
+** Progress logging
+*** Closing items
+Let's keep track of when a task gets done by adding a timestamp.
+#+begin_src emacs-lisp :tangle yes
+(setq org-log-done 'time)
+#+end_src
+
+*** Tracking TODO state changes
+ Please see [[*Extended use of TODO keywords][Extended use of TODO keywords]].
+
+*** Tracking your habits
+In order to enable habit tracking, let's add it to the org-modules
+#+begin_src emacs-lisp :tangle yes
+(add-to-list 'org-modules 'org-habit)
+#+end_src
+
+Next, we configure a few org-habit variables
+#+begin_src emacs-lisp :tangle yes
+(setq org-habit-graph-column 40
+      org-habit-preceding-days 30
+      org-habit-following-days 7
+      org-habit-show-habits-only-for-today t)
+#+end_src
+
+** Priorities
+I find that having only three priorities is a bit limiting. Let's
+configure a wider range of possible priorities that may be used.
+#+begin_src emacs-lisp :tangle yes
+(setq org-highest-priority 65
+      org-lowest-priority 69
+      org-default-priority 67)
+#+end_src
+
+* Tags
+** Settings tags
+It's useful to have a global list of possible tags. Let's set this up
+through the org-tag-alist variable.
+#+begin_src emacs-lisp :tangle yes
+(setq org-tag-alist (quote ((:startgroup . nil)
+                            ("@work" . ?W)
+                            ("@home" . ?H)
+                            ("@parents" . ?P)
+                            (:endgroup . nil)
+                            ("WAITING" . ?w)
+                            ("HOLD" . ?h)
+                            ("HABITS" . ?b)
+                            ("PERSONAL" . ?p)
+                            ("ORG" . ?o)
+                            ("NOTE" . ?n)
+                            ("CANCELED" . ?c)
+                            ("FLAGGED" . ??))))
+#+end_src
+
+Next, let's enable fast tag selection and set the
+org-fast-tag-selection-single-key to the symbol expert to suppress the
+org-tag dispatch window.
+#+begin_src emacs-lisp :tangle yes
+(setq org-use-fast-tag-selection t
+      org-fast-tag-selection-single-key 'expert)
+#+end_src
+
+* Properties and columns
+** Property syntax
+ Let's assign a few common properties to the variable
+ org-global-properties to make it easy to add these to any entry in
+ our org files.
+#+begin_src emacs-lisp :tangle yes
+(setq org-global-properties
+      '(("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
+        ("STYLE_ALL" . "habit")))
+#+end_src
+
+* Dates and times
+** Creating timestamps
+When creating timestamps, org defaults to rounding minutes to the
+closest 5 minute interval. Instead, let's ask it to consider 1 minute
+intervals.
+#+begin_src emacs-lisp :tangle yes
+(setq org-time-stamp-rounding-minutes '(1 1))
+#+end_src
+
+** Deadlines and scheduling
+*** Inserting deadlines or schedules
+Let's ask org mode to log a note from us when changing a deadline.
+This should hopefully force us to _keep_ our deadlines.
+
+Now, since schedules are softer and we're likely to change them a few
+times, let's just ask org to keep timestamps of these changes.
+#+begin_src emacs-lisp :tangle yes
+(setq org-log-redeadline 'note
+      org-log-reschedule 'time)
+#+end_src
+
+** Clocking work time
+I am getting more and more obsessed about clocking everything. As
+such, let's enable clocking and increase the history length to 25.
+#+begin_src emacs-lisp :tangle yes
+(org-clock-persistence-insinuate)
+(setq org-clock-persist t
+      org-clock-history-length 25)
+#+end_src
+
+*** Clocking commands
+It's useful to have all logging information in a single drawer.
+#+begin_src emacs-lisp :tangle yes
+(setq org-clock-into-drawer t)
+#+end_src
+
+*** Resolving idle time
+Org has a feature I haven't used much that allows it to alert you
+after X minutes of idle time and ask you how to clock this idle time.
+Let's turn this feature on and experiment with it for a little while.
+#+begin_src emacs-lisp :tangle yes
+(setq org-clock-idle-time 10)
+#+end_src
+
+*** Effort estimates
+The column view provides an easy way to review effort estimates. Let's
+include these in the column format variables.
+#+begin_src emacs-lisp :tangle yes
+(setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM"
+      org-agenda-overriding-columns-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+#+end_src
+
+* Capture - Refile - Archive
+** Setting up capture
+First, we set up a few basic variables
+#+begin_src emacs-lisp :tangle yes
+(setq org-directory "~/rep/personal/org"
+      org-default-notes-file (concat org-directory "/notes.org"))
+#+end_src
+
+Next, we set up the actual templates
+#+begin_src emacs-lisp :tangle yes
+(defconst jr/org-basic-scheduled-task
+  "* TODO %^{Task}
+  SCHEDULED: %t
+  :PROPERTIES:
+  :Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}
+  :END:\n%U\n%?\n%i\n%a\n" "Basic task data suggested by Sasha Chua")
+
+(defconst jr/org-habit-task
+  "* NEXT %? :HABIT:
+  SCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")
+  :PROPERTIES:
+  :STYLE: habit
+  :REPEAT_TO_STATE: NEXT
+  :END:\n%U\n%a\n" "Capture template for habits")
+
+(setq org-capture-templates
+      `(("t" "todo" entry (file "refile.org")
+         ,jr/org-basic-scheduled-task :clock-in t :clock-resume t)
+        ("T" "quick task" entry (file "refile.org")
+         "* TODO %^{Task}\n   SCHEDULED: %t\n%a"
+         :immediate-finish t)
+        ("r" "respond" entry (file "refile.org")
+         "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n")
+        ("n" "note" entry (file "refile.org")
+         "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+        ("h" "habit" entry (file "refile.org")
+         ,jr/org-habit-task :clock-in t :clock-resume t)
+        ("i" "interrupting task" entry
+         (file+headline "/rep/personal/org/todo.org"  "Main")
+         "* STARTED %^{Task}\n   SCHEDULED: %t\n%a"
+         :clock-in t :clock-keep t)
+        ("m" "meeting" entry (file "refile.org")
+         "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+        ("w" "org-protocol" entry (file "refile.org")
+         "* TODO Review %:description\n   SCHEDULED: %t\nSource: %:link\n\n"
+         :immediate-finish t)
+        ("s" "someday" entry (file+headline "someday.org" "Someday tasks")
+         "* %? :SOMEDAY:\n%U\n%a\n" :clock-in t :clock-resume t)
+        ("p" "phone call" entry (file "refile.org")
+         "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)))
+#+end_src
+
+We now borrow/steal a short function to handle empty drawers.
+#+begin_src emacs-lisp :tangle yes
+(defun jr/org-remove-empty-drawer-on-clock-out ()
+  "Blatlanty stolen from http://doc.norang.ca/org-mode.html"
+  (interactive)
+  (save-excursion
+    (beginning-of-line 0)
+    (org-remove-empty-drawer-at (point))))
+
+(add-hook 'org-clock-out-hook 'jr/org-remove-empty-drawer-on-clock-out)
+#+end_src
+
+** Templates in contexts
+Template contexts allows you to enable some capture templates only
+under certain conditions. Let's add an entry for our 'Respond'
+template for gnus.
+#+begin_src emacs-lisp :tangle yes
+(setq org-capture-templates-contexts
+      '(("r" ((in-mode . "gnus-\\(summary\\|article\\)-mode")))))
+#+end_src
+
+** Refile and copy
+Let's choose our refile targets, add a verify function and set refile
+settings.
+#+begin_src emacs-lisp :tangle yes
+(setq org-refile-targets '((nil :maxlevel . 4) ; nil = current buffer
+                           (org-agenda-files :maxlevel . 3)
+                           (org-agenda-files :tag . "PROJECT")))
+
+(defun jr/org-verify-refile-target ()
+  "Exclude todo keywords with a done state from refile targets.
+Taken from http://doc.norang.ca/org-mode.html"
+  (not (member (nth 2 (org-heading-components)) org-done-keywords)))
+
+(setq org-refile-target-verify-function 'jr/org-verify-refile-target
+      org-refile-use-outline-path t
+      org-outline-path-complete-in-steps nil
+      org-refile-allow-creating-parent-nodes 'confirm
+      org-log-refile 'time)
+#+end_src
+
+** Archiving
+I find it useful to archive subtrees into a date tree. Let's enable
+this behavior and ask to save context information alongside the entry.
+#+begin_src emacs-lisp :tangle yes
+(setq org-archive-location "%s_archive::datetree/"
+      org-archive-save-context-info '(time file ltags itags todo category olpath))
+#+end_src
+
+* Agenda views
+Let's tell org how to display our agenda buffer.
+#+begin_src emacs-lisp :tangle yes
+(setq org-agenda-window-setup 'reorganize-frame
+      org-agenda-restore-windows-after-quit t)
+#+end_src
+
+** Agenda files
+The manual recommends using the C-c [ and C-c ] bindings to manage
+agenda files. It turns out, though, we can also add directories to the
+org-agenda-files variable directly, which effectively adds _all_ org
+files under that directory to the agenda. Let's also remove C-c [ and
+C-c ] bindings to prevent changing the setup below.
+
+#+begin_src emacs-lisp :tangle yes
+(setq org-agenda-files (list org-directory
+                             (concat org-directory "/maximo-nivel")
+                             (concat org-directory "/ticketnetwork")))
+
+(define-key org-mode-map (kbd "C-c [") 'nil)
+(define-key org-mode-map (kbd "C-c ]") 'nil)
+#+end_src
+
+** The agenda dispatcher
+Per the manual, Org rebuilds the agenda each time which significantly
+slows down my workflow. Let's turn on sticky agendas by default to
+help this delay somewhat.
+#+begin_src emacs-lisp :tangle yes
+(setq org-agenda-sticky t)
+#+end_src
+
+** The built-in agenda views
+*** The weekly/daily agenda
+Let's have our agenda span a single day by default, remove diary items
+and set up appointments.
+#+begin_src emacs-lisp :tangle yes
+(setq org-agenda-span 'day
+      org-agenda-include-diary nil)
+
+(org-agenda-to-appt)
+
+(defun jr/org-agenda-to-appt ()
+  "Clear the list of today's appointments and rebuild it from the
+`org-agenda'"
+  (interactive)
+  (setq appt-time-msg-list nil)
+  (org-agenda-to-appt))
+
+(add-hook 'org-agenda-finalize-hook 'jr/org-agenda-to-appt 'append)
+(run-at-time "24:05" nil 'jr/org-agenda-to-appt)
+#+end_src
+
+*** The global TODO list
+For our purposes, an _open_ todo item is one that is not in a DONE
+state, does not have deadline and it isn't scheduled.
+#+begin_src emacs-lisp :tangle yes
+(setq org-agenda-todo-ignore-deadlines 'all
+      org-agenda-todo-ignore-scheduled 'all)
+#+end_src
+
+*** Stuck projects
+Let's define a stuck project as a level 2 headline with no subtasks
+with TODO, NEXT, or STARTED.
+#+begin_src emacs-lisp :tangle yes
+(setq org-stuck-projects
+      '("+LEVEL=2/-DONE" ("TODO" "NEXT" "STARTED") nil ""))
+#+end_src
+
+* Markup
+** Emphasis and monospace
+Let's ensure we have fontification of emphasized text.
+#+begin_src emacs-lisp :tangle yes
+(setq org-fontify-emphasized-text t)
+#+end_src
+
+** Special symbols
+When possible, let's ask Org to display entities as UTF-8 characters when possible.
+#+begin_src emacs-lisp :tangle yes
+(setq org-pretty-entities t)
+#+end_src
+
+* Exporting
+** Comment lines
+Commenting lines and headline allows one to prevent Org from exporting
+certain items. Unfortunately, the COMMENT toggle for a headline is
+bound to C-c ; which I fond myself pressing often by mistake. Let's
+remove this binding.
+#+begin_src emacs-lisp :tangle yes
+(define-key org-mode-map (kbd "C-c ;") 'nil)
+#+end_src
+
+* Miscellaneous
+** Speed keys
+Speed keys allow commands to run when the point is on a headline.
+Let's enable this useful feature.
+#+begin_src emacs-lisp :tangle yes
+(setq org-use-speed-commands t)
+#+end_src
+
+* Custom
+What follows are customization that weren't included in the structure above.
+#+begin_src emacs-lisp :tangle yes
+;; Fontify org-mode code blocks
+(setq org-src-fontify-natively t)
+#+end_src
+
+** Org present
+[[https://github.com/rlister/org-present][Org present]] is ultra-minimalist presentation minor-mode for Emacs
+org-mode. It's great for talks or presentations written in org mode. A
+particularly useful feature is that code blocks are shown with proper
+syntax highlighted but without their BEGIN_SRC/END_SRC delimiters.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package org-present
+  :ensure t
+  :config
+  (progn
+    (use-package hide-mode-line
+      :ensure t)
+     (add-hook 'org-present-mode-hook
+               (lambda ()
+                 (org-present-big)
+                 (org-display-inline-images)
+                 (org-present-hide-cursor)
+                 (org-present-read-only)
+                 (hide-mode-line-mode +1)))
+     (add-hook 'org-present-mode-quit-hook
+               (lambda ()
+                 (org-present-small)
+                 (org-remove-inline-images)
+                 (org-present-show-cursor)
+                 (org-present-read-write)
+                 (hide-mode-line-mode -1)))))
+#+END_SRC
+
+** Org babel/source blocks
+I like to have source blocks properly syntax highlighted and with the
+editing popup window staying within the same window so all the windows
+don’t jump around. Also, having the top and bottom trailing lines in
+the block is a waste of space, so we can remove them.
+
+I noticed that fontification doesn’t work with markdown mode when the
+block is indented after editing it in the org src buffer—the leading
+#s for headers don’t get fontified properly because they appear as Org
+comments. Setting org-src-preserve-indentation makes things consistent
+as it doesn’t pad source blocks with leading spaces.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq org-src-fontify-natively t
+      org-src-window-setup 'current-window
+      org-src-strip-leading-and-trailing-blank-lines t
+      org-src-preserve-indentation t
+      org-src-tab-acts-natively t)
+#+END_SRC
+
+** Hooks
+#+begin_src emacs-lisp :tangle yes
+;; Start emacs with the agenda open
+(add-hook 'after-init-hook
+          (lambda ()
+            (org-agenda nil "a")
+            (delete-other-windows)))
+
+;; I've been using the agenda far more these days as a way to stay
+;; organized. I like that hitting 'k' while in an agenda buffer fires up
+;; org-capture. What I don't like is that I have to manually refresh (by
+;; hitting 'g') the agenda to see the newly added task.
+;; Here's a bit of code to sort this out:
+
+(defun jr/org-capture-after-finalize-hook ()
+  (when (buffer-live-p org-agenda-buffer)
+    (ignore-errors
+      (with-current-buffer org-agenda-buffer
+        (org-agenda-redo t)))))
+
+(add-hook 'org-capture-after-finalize-hook 'jr/org-capture-after-finalize-hook)
+
+;; Often times I need to restart emacs and leave my clocking in a bad
+;; state.
+;; The following hook clocks me out before closing emacs, if needed.
+
+(add-hook 'kill-emacs-hook (lambda () (when (org-clocking-p)
+                                   (with-current-buffer (org-clocking-buffer)
+                                     (org-clock-out)
+                                     (save-buffer)))))
+#+end_src
+
+** Keybindings
+#+begin_src emacs-lisp :tangle yes
+(defun jr/org-show-agenda ()
+  "Show the agenda buffer in a full frame creating it if needed."
+  (interactive)
+  (let ((agenda-buffer-name
+         (if org-agenda-sticky "*Org Agenda(a)*" "*Org Agenda*")))
+    (if (get-buffer agenda-buffer-name)
+        (switch-to-buffer agenda-buffer-name)
+      (org-agenda nil "a")))
+  (delete-other-windows))
+
+(global-set-key (kbd "<f12>") 'org-agenda)
+
+(global-set-key (kbd "<f9> <f9>") 'jr/org-show-agenda)
+(global-set-key (kbd "<f9> b") 'bbdb)
+(global-set-key (kbd "<f9> c") 'calendar)
+(global-set-key (kbd "<f9> t l") 'org-toggle-link-display)
+(global-set-key (kbd "<f9> t i") 'org-toggle-inline-images)
+
+(global-set-key (kbd "<f11>") 'org-clock-goto)
+
+(global-set-key (kbd "<XF86Explorer>") 'org-agenda)
+(global-set-key (kbd "<XF86Tools> <XF86Tools>") 'jr/org-show-agenda)
+
+(global-set-key (kbd "<XF86Tools> b") 'bbdb)
+(global-set-key (kbd "<XF86Tools> c") 'calendar)
+(global-set-key (kbd "<XF86Tools> t l") 'org-toggle-link-display)
+(global-set-key (kbd "<XF86Tools> t i") 'org-toggle-inline-images)
+
+(global-set-key (kbd "<XF86LaunchA>") 'org-clock-goto)
+#+end_src

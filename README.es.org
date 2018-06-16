@@ -1,0 +1,24 @@
+* Configuración de Emacs
+
+Mi configuración de [[https://orgmode.org/][org-mode]] para [[https://www.gnu.org/software/emacs/][GNU Emacs]] escrita conveniente como un archivo de org.
+
+Los headlines de primer nivel son los mismos a los presentes en el
+manual de org ya que el manual fue mi fuente de información principal
+para esta configuración.
+
+* Preparación 
+
+Para usar esta configuración, por favor proceda con el siguiente comando:
+
+#+BEGIN_SRC sh
+git clone https://github.com/jeko2000/dot-org.git
+#+END_SRC
+
+Después, agregua lo siguiente en su archivo de inicialización .emacs or .init:
+#+BEGIN_SRC emacs-lisp
+(let ((org-config-file "~/location/of/dot/org.org"))
+  (when (file-exists-p org-config-file)
+    (org-babel-load-file org-config-file nil)))
+#+END_SRC
+
+Para más información, visita el archivo [[dot-org.org]].

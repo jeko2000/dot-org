@@ -1,0 +1,24 @@
+* Org mode Configuration
+
+My [[https://orgmode.org/][org-mode]] configuration for [[https://www.gnu.org/software/emacs/][GNU Emacs]] conveniently written as an org file.
+
+The first level headings for the configuration mirror those from the
+org manual as that was my main source of information for this
+configuration.
+
+* Setup
+
+To use this configuration, first clone the repository as follows:
+
+#+BEGIN_SRC sh
+git clone https://github.com/jeko2000/dot-org.git
+#+END_SRC
+
+Then, add the following or equivalent to your .emacs or .init file:
+#+BEGIN_SRC emacs-lisp
+(let ((org-config-file "~/location/of/dot/org.org"))
+  (when (file-exists-p org-config-file)
+    (org-babel-load-file org-config-file nil)))
+#+END_SRC
+
+For more information, please visit [[dot-org.org]].
