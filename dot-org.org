@@ -565,13 +565,13 @@ as it doesn’t pad source blocks with leading spaces.
 ;; hitting 'g') the agenda to see the newly added task.
 ;; Here's a bit of code to sort this out:
 
-(defun jr/org-capture-after-finalize-hook ()
+(defun jr/org-agenda-rebuild-agenda ()
   (when (buffer-live-p org-agenda-buffer)
     (ignore-errors
       (with-current-buffer org-agenda-buffer
         (org-agenda-redo t)))))
 
-(add-hook 'org-capture-after-finalize-hook 'jr/org-capture-after-finalize-hook)
+(add-hook 'org-capture-after-finalize-hook 'jr/org-agenda-rebuild-agenda)
 
 ;; Often times I need to restart emacs and leave my clocking in a bad
 ;; state.
