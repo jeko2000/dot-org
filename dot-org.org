@@ -246,9 +246,22 @@ such, let's enable clocking and increase the history length to 25.
 #+end_src
 
 *** Clocking commands
-It's useful to have all logging information in a single drawer.
+It's useful to have all logging information in a single drawer and to
+remove clock lines when the resulting time is zero. Further, let's
+have Org clock out when a task is done. Finally, let's have Org switch
+tasks to STARTED when they are first clocked-in outside the capture buffer.
 #+begin_src emacs-lisp :tangle yes
-(setq org-clock-into-drawer t)
+(defun jr/clock-in-to-started (kw)
+  "Return special todo keyword when outside org-capture-mode."
+  (unless (or (string-equal kw "STARTED")
+              (and (boundp 'org-capture-mode)
+                   org-capture-mode))
+    "STARTED"))
+
+(setq org-clock-into-drawer t
+      org-clock-out-remove-zero-time-clocks t
+      org-clock-out-when-done t
+      org-clock-in-switch-to-state 'jr/clock-in-to-started)
 #+end_src
 
 *** Resolving idle time
