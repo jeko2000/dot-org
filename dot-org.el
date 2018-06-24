@@ -95,7 +95,17 @@
 (setq org-clock-persist t
       org-clock-history-length 25)
 
-(setq org-clock-into-drawer t)
+(defun jr/clock-in-to-started (kw)
+  "Return special todo keyword when outside org-capture-mode."
+  (unless (or (string-equal kw "STARTED")
+              (and (boundp 'org-capture-mode)
+                   org-capture-mode))
+    "STARTED"))
+
+(setq org-clock-into-drawer t
+      org-clock-out-remove-zero-time-clocks t
+      org-clock-out-when-done t
+      org-clock-in-switch-to-state 'jr/clock-in-to-started)
 
 (setq org-clock-idle-time 10)
 
@@ -109,7 +119,7 @@
   "* TODO %^{Task}
   SCHEDULED: %t
   :PROPERTIES:
-  :Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}
+  :Effort: %^{effort|1:00|0:05|0:15|0:30|0:45|2:00|3:00|4:00|5:00|6:00}
   :END:\n%U\n%?\n%i\n%a\n" "Basic task data suggested by Sasha Chua")
 
 (defconst jr/org-habit-task
@@ -123,17 +133,14 @@
 (setq org-capture-templates
       `(("t" "todo" entry (file "refile.org")
          ,jr/org-basic-scheduled-task :clock-in t :clock-resume t)
-        ("T" "quick task" entry (file "refile.org")
-         "* TODO %^{Task}\n   SCHEDULED: %t\n%a"
-         :immediate-finish t)
         ("r" "respond" entry (file "refile.org")
-         "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n")
+         "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
+          :clock-in t :clock-resume t :immediate-finish t)
         ("n" "note" entry (file "refile.org")
          "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
         ("h" "habit" entry (file "refile.org")
          ,jr/org-habit-task :clock-in t :clock-resume t)
-        ("i" "interrupting task" entry
-         (file+headline "/rep/personal/org/todo.org"  "Main")
+        ("i" "interrupting task" entry (file "refile.org")
          "* STARTED %^{Task}\n   SCHEDULED: %t\n%a"
          :clock-in t :clock-keep t)
         ("m" "meeting" entry (file "refile.org")
@@ -144,7 +151,7 @@
         ("s" "someday" entry (file+headline "someday.org" "Someday tasks")
          "* %? :SOMEDAY:\n%U\n%a\n" :clock-in t :clock-resume t)
         ("p" "phone call" entry (file "refile.org")
-         "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)))
+         "* PHONE call with %? :PHONE:\n%U" :clock-in t :clock-resume t)))
 
 (defun jr/org-remove-empty-drawer-on-clock-out ()
   "Blatlanty stolen from http://doc.norang.ca/org-mode.html"
@@ -247,6 +254,26 @@ Taken from http://doc.norang.ca/org-mode.html"
       org-src-preserve-indentation t
       org-src-tab-acts-natively t)
 
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((C . t)
+   (calc . t)
+   (clojure . t)
+   (haskell . t)
+   (gnuplot . t)
+   (java . t)
+   (js . t)
+   (latex . t)
+   (ledger . t)
+   (lisp . t)
+   (org . t)
+   (python . t)
+   (scheme . t)
+   (sed . t)
+   (shell . t)
+   (sqlite . t)
+   (python . t)))
+
 ;; Start emacs with the agenda open
 (add-hook 'after-init-hook
           (lambda ()
@@ -259,13 +286,13 @@ Taken from http://doc.norang.ca/org-mode.html"
 ;; hitting 'g') the agenda to see the newly added task.
 ;; Here's a bit of code to sort this out:
 
-(defun jr/org-capture-after-finalize-hook ()
+(defun jr/org-agenda-rebuild-agenda ()
   (when (buffer-live-p org-agenda-buffer)
     (ignore-errors
       (with-current-buffer org-agenda-buffer
         (org-agenda-redo t)))))
 
-(add-hook 'org-capture-after-finalize-hook 'jr/org-capture-after-finalize-hook)
+(add-hook 'org-capture-after-finalize-hook 'jr/org-agenda-rebuild-agenda)
 
 ;; Often times I need to restart emacs and leave my clocking in a bad
 ;; state.
@@ -286,6 +313,21 @@ Taken from http://doc.norang.ca/org-mode.html"
       (org-agenda nil "a")))
   (delete-other-windows))
 
+(defun jr/clock-in-last (arg)
+  "Clock in the most recently clocked task.
+If the clock is already active, do nothing but print a message.
+With a ‘C-u’ prefix argument, offer a list of recently clocked
+tasks to clock into."
+  (interactive "p")
+  (cond
+   ((eq arg 4) (org-clock-in '(4))))
+  (let ((task-marker (if (org-clock-is-active)
+                         (cadr org-clock-history)
+                       (car org-clock-history))))
+    (when task-marker
+      (org-with-point-at task-marker
+        (org-clock-in nil)))))
+
 (global-set-key (kbd "<f12>") 'org-agenda)
 
 (global-set-key (kbd "<f9> <f9>") 'jr/org-show-agenda)
@@ -293,6 +335,11 @@ Taken from http://doc.norang.ca/org-mode.html"
 (global-set-key (kbd "<f9> c") 'calendar)
 (global-set-key (kbd "<f9> t l") 'org-toggle-link-display)
 (global-set-key (kbd "<f9> t i") 'org-toggle-inline-images)
+
+(global-set-key (kbd "<f9> i") 'org-clock-in)
+(global-set-key (kbd "<f9> o") 'org-clock-out)
+(global-set-key (kbd "<f9> l") 'jr/clock-in-last)
+(global-set-key (kbd "<f9> e") 'org-clock-modify-effort-estimate)
 
 (global-set-key (kbd "<f11>") 'org-clock-goto)
 
@@ -303,5 +350,10 @@ Taken from http://doc.norang.ca/org-mode.html"
 (global-set-key (kbd "<XF86Tools> c") 'calendar)
 (global-set-key (kbd "<XF86Tools> t l") 'org-toggle-link-display)
 (global-set-key (kbd "<XF86Tools> t i") 'org-toggle-inline-images)
+
+(global-set-key (kbd "<XF86Tools> i") 'org-clock-in)
+(global-set-key (kbd "<XF86Tools> o") 'org-clock-out)
+(global-set-key (kbd "<XF86Tools> l") 'jr/clock-in-last)
+(global-set-key (kbd "<XF86Tools> e") 'org-clock-modify-effort-estimate)
 
 (global-set-key (kbd "<XF86LaunchA>") 'org-clock-goto)
