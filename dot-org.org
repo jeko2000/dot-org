@@ -308,17 +308,14 @@ Next, we set up the actual templates
 (setq org-capture-templates
       `(("t" "todo" entry (file "refile.org")
          ,jr/org-basic-scheduled-task :clock-in t :clock-resume t)
-        ("T" "quick task" entry (file "refile.org")
-         "* TODO %^{Task}\n   SCHEDULED: %t\n%a"
-         :immediate-finish t)
         ("r" "respond" entry (file "refile.org")
-         "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n")
+         "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
+          :clock-in t :clock-resume t :immediate-finish t)
         ("n" "note" entry (file "refile.org")
          "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
         ("h" "habit" entry (file "refile.org")
          ,jr/org-habit-task :clock-in t :clock-resume t)
-        ("i" "interrupting task" entry
-         (file+headline "/rep/personal/org/todo.org"  "Main")
+        ("i" "interrupting task" entry (file "refile.org")
          "* STARTED %^{Task}\n   SCHEDULED: %t\n%a"
          :clock-in t :clock-keep t)
         ("m" "meeting" entry (file "refile.org")
@@ -329,7 +326,7 @@ Next, we set up the actual templates
         ("s" "someday" entry (file+headline "someday.org" "Someday tasks")
          "* %? :SOMEDAY:\n%U\n%a\n" :clock-in t :clock-resume t)
         ("p" "phone call" entry (file "refile.org")
-         "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)))
+         "* PHONE call with %? :PHONE:\n%U" :clock-in t :clock-resume t)))
 #+end_src
 
 We now borrow/steal a short function to handle empty drawers.
