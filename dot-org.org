@@ -618,7 +618,11 @@ tasks to clock into."
 (global-set-key (kbd "<f9> t l") 'org-toggle-link-display)
 (global-set-key (kbd "<f9> t i") 'org-toggle-inline-images)
 
+(global-set-key (kbd "<f9> i") 'org-clock-in)
+(global-set-key (kbd "<f9> o") 'org-clock-out)
 (global-set-key (kbd "<f9> l") 'jr/clock-in-last)
+(global-set-key (kbd "<f9> e") 'org-clock-modify-effort-estimate)
+
 (global-set-key (kbd "<f11>") 'org-clock-goto)
 
 (global-set-key (kbd "<XF86Explorer>") 'org-agenda)
@@ -629,6 +633,10 @@ tasks to clock into."
 (global-set-key (kbd "<XF86Tools> t l") 'org-toggle-link-display)
 (global-set-key (kbd "<XF86Tools> t i") 'org-toggle-inline-images)
 
+(global-set-key (kbd "<XF86Tools> i") 'org-clock-in)
+(global-set-key (kbd "<XF86Tools> o") 'org-clock-out)
 (global-set-key (kbd "<XF86Tools> l") 'jr/clock-in-last)
+(global-set-key (kbd "<XF86Tools> e") 'org-clock-modify-effort-estimate)
+
 (global-set-key (kbd "<XF86LaunchA>") 'org-clock-goto)
 #+end_src
