@@ -5,12 +5,12 @@
 * Introduction
 ** Activation
    We begin by setting the most important global keys.
-   #+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle yes
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cc" 'org-capture)
 (global-set-key "\C-cb" 'org-switchb)
-   #+end_src
+#+end_src
 
 Then, we ensure that emacs recognizes .org, .org_archive, and even
 .txt files as org mode files.
@@ -22,9 +22,9 @@ Then, we ensure that emacs recognizes .org, .org_archive, and even
 ** Headlines
  It's often unnecessary to have extra empty lines between headlines in
  collapsed view. As such, let's ask org to keep those within the branch.
- #+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle yes
 (setq org-cycle-separator-lines 0)
- #+end_src
+#+end_src
 
 Next, let's ask for the ctrl-a and ctrl-e commands to be aware of
 Headline text. Specifically, let's ask that ctrl-a brings the point to
@@ -39,9 +39,9 @@ end of the headline text before any tags.
 *** Initial visibility
  Though we can set visibility per file using #+STARTUP option, let's
  default to having all org files to OVERVIEW.
- #+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle yes
 (setq org-startup-folded t)
- #+end_src
+#+end_src
 
 *** Catching invisible edits
 As explained in the [[info:org#Catching%20invisible%20edits][manual]], you may sometimes edit an invisible part of the
@@ -71,10 +71,10 @@ line before creating a new headline.
 ** Plain lists
  I find giving sub-lists different bullets and extra
  indentation improves their readability.
- #+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle yes
 (setq org-list-demote-modify-bullet '(("+" . "-") ("-" . "+"))
       org-list-indent-offset 1)
- #+end_src
+#+end_src
 Next, let's ask org to treat plain lists as low-level headings so that
 visibility cycling on headlines also include plain lists.
 #+begin_src emacs-lisp :tangle yes
