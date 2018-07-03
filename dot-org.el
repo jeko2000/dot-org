@@ -315,24 +315,26 @@ Taken from http://doc.norang.ca/org-mode.html"
 
 (defun jr/clock-in-last (arg)
   "Clock in the most recently clocked task.
+
 If the clock is already active, do nothing but print a message.
 With a ‘C-u’ prefix argument, offer a list of recently clocked
 tasks to clock into."
   (interactive "p")
   (cond
    ((eq arg 4) (org-clock-in '(4))))
-  (let ((task-marker (if (org-clock-is-active)
-                         (cadr org-clock-history)
-                       (car org-clock-history))))
-    (when task-marker
-      (org-with-point-at task-marker
-        (org-clock-in nil)))))
+  (if (org-clock-is-active)
+      (message "Clock is already active. Nothing to do.")
+    (let ((task-marker (car org-clock-history)))
+      (when task-marker
+        (org-with-point-at task-marker
+          (org-clock-in nil))))))
 
 (global-set-key (kbd "<f12>") 'org-agenda)
 
 (global-set-key (kbd "<f9> <f9>") 'jr/org-show-agenda)
 (global-set-key (kbd "<f9> b") 'bbdb)
 (global-set-key (kbd "<f9> c") 'calendar)
+(global-set-key (kbd "<f9> t l") 'org-toggle-link-display)
 (global-set-key (kbd "<f9> t l") 'org-toggle-link-display)
 (global-set-key (kbd "<f9> t i") 'org-toggle-inline-images)
 
