@@ -446,6 +446,16 @@ with TODO, NEXT, or STARTED.
       '("+LEVEL=2/-DONE" ("TODO" "NEXT" "STARTED") nil ""))
 #+end_src
 
+** Custom views
+#+begin_src emacs-lisp :tangle yes
+(setq org-agenda-custom-commands
+      '(("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))
+        ("N" "Notes" tags "NOTE"
+         ((org-agenda-overriding-header "NOTES")
+          (org-agenda-sorting-strategy
+           '(alpha-up))))))
+#+end_src
+
 * Markup
 ** Emphasis and monospace
 Let's ensure we have fontification of emphasized text.
