@@ -308,6 +308,8 @@ Next, we set up the actual templates
 (setq org-capture-templates
       `(("t" "todo" entry (file "refile.org")
          ,jr/org-basic-scheduled-task :clock-in t :clock-resume t)
+        ("f" "family" entry (file+headline "family.org" "Family tasks")
+         ,jr/org-basic-scheduled-task :clock-in t :clock-resume t)
         ("r" "respond" entry (file "refile.org")
          "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
          :clock-in t :clock-resume t :immediate-finish t)
