@@ -395,9 +395,7 @@ files under that directory to the agenda. Let's also remove C-c [ and
 C-c ] bindings to prevent changing the setup below.
 
 #+begin_src emacs-lisp :tangle yes
-(setq org-agenda-files (list org-directory
-                             (concat org-directory "/maximo-nivel")
-                             (concat org-directory "/ticketnetwork")))
+(setq org-agenda-files (list org-directory))
 
 (define-key org-mode-map (kbd "C-c [") 'nil)
 (define-key org-mode-map (kbd "C-c ]") 'nil)
