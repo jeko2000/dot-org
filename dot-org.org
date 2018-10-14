@@ -310,8 +310,8 @@ Next, we set up the actual templates
          ,jr/org-basic-scheduled-task :clock-in t :clock-resume t)
         ("r" "respond" entry (file "refile.org")
          "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
-          :clock-in t :clock-resume t :immediate-finish t)
-        ("n" "note" entry (file "refile.org")
+         :clock-in t :clock-resume t :immediate-finish t)
+        ("n" "note" entry (file+headline "notes.org" "References")
          "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
         ("h" "habit" entry (file "refile.org")
          ,jr/org-habit-task :clock-in t :clock-resume t)
