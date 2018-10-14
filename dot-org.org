@@ -539,6 +539,7 @@ as it doesn’t pad source blocks with leading spaces.
    (gnuplot . t)
    (java . t)
    (js . t)
+   (octave . t)
    (latex . t)
    (ledger . t)
    (lisp . t)
