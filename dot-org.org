@@ -190,7 +190,6 @@ through the org-tag-alist variable.
                             ("HOLD" . ?h)
                             ("HABITS" . ?b)
                             ("PERSONAL" . ?p)
-                            ("ORG" . ?o)
                             ("NOTE" . ?n)
                             ("CANCELED" . ?c)
                             ("FLAGGED" . ??))))
