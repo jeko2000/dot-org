@@ -74,7 +74,6 @@
                             ("HOLD" . ?h)
                             ("HABITS" . ?b)
                             ("PERSONAL" . ?p)
-                            ("ORG" . ?o)
                             ("NOTE" . ?n)
                             ("CANCELED" . ?c)
                             ("FLAGGED" . ??))))
@@ -112,7 +111,7 @@
 (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM"
       org-agenda-overriding-columns-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
 
-(setq org-directory "~/rep/personal/org"
+(setq org-directory (or (and (boundp 'jr/org-directory) jr/org-directory) "~/rep/personal/org")
       org-default-notes-file (concat org-directory "/notes.org"))
 
 (defconst jr/org-basic-scheduled-task
@@ -133,10 +132,12 @@
 (setq org-capture-templates
       `(("t" "todo" entry (file "refile.org")
          ,jr/org-basic-scheduled-task :clock-in t :clock-resume t)
+        ("f" "family" entry (file+headline "family.org" "Family tasks")
+         ,jr/org-basic-scheduled-task :clock-in t :clock-resume t)
         ("r" "respond" entry (file "refile.org")
          "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
-          :clock-in t :clock-resume t :immediate-finish t)
-        ("n" "note" entry (file "refile.org")
+         :clock-in t :clock-resume t :immediate-finish t)
+        ("n" "note" entry (file+headline "notes.org" "References")
          "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
         ("h" "habit" entry (file "refile.org")
          ,jr/org-habit-task :clock-in t :clock-resume t)
@@ -216,6 +217,13 @@ Taken from http://doc.norang.ca/org-mode.html"
 (setq org-stuck-projects
       '("+LEVEL=2/-DONE" ("TODO" "NEXT" "STARTED") nil ""))
 
+(setq org-agenda-custom-commands
+      '(("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))
+        ("N" "Notes" tags "NOTE"
+         ((org-agenda-overriding-header "NOTES")
+          (org-agenda-sorting-strategy
+           '(alpha-up))))))
+
 (setq org-fontify-emphasized-text t)
 
 (setq org-pretty-entities t)
@@ -263,6 +271,7 @@ Taken from http://doc.norang.ca/org-mode.html"
    (gnuplot . t)
    (java . t)
    (js . t)
+   (octave . t)
    (latex . t)
    (ledger . t)
    (lisp . t)
@@ -315,26 +324,24 @@ Taken from http://doc.norang.ca/org-mode.html"
 
 (defun jr/clock-in-last (arg)
   "Clock in the most recently clocked task.
-
 If the clock is already active, do nothing but print a message.
 With a ‘C-u’ prefix argument, offer a list of recently clocked
 tasks to clock into."
   (interactive "p")
   (cond
    ((eq arg 4) (org-clock-in '(4))))
-  (if (org-clock-is-active)
-      (message "Clock is already active. Nothing to do.")
-    (let ((task-marker (car org-clock-history)))
-      (when task-marker
-        (org-with-point-at task-marker
-          (org-clock-in nil))))))
+  (let ((task-marker (if (org-clock-is-active)
+                         (cadr org-clock-history)
+                       (car org-clock-history))))
+    (when task-marker
+      (org-with-point-at task-marker
+        (org-clock-in nil)))))
 
 (global-set-key (kbd "<f12>") 'org-agenda)
 
 (global-set-key (kbd "<f9> <f9>") 'jr/org-show-agenda)
 (global-set-key (kbd "<f9> b") 'bbdb)
 (global-set-key (kbd "<f9> c") 'calendar)
-(global-set-key (kbd "<f9> t l") 'org-toggle-link-display)
 (global-set-key (kbd "<f9> t l") 'org-toggle-link-display)
 (global-set-key (kbd "<f9> t i") 'org-toggle-inline-images)
 
