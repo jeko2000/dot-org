@@ -284,7 +284,8 @@ include these in the column format variables.
 ** Setting up capture
 First, we set up a few basic variables
 #+begin_src emacs-lisp :tangle yes
-(setq org-directory "~/rep/personal/org"
+
+(setq org-directory (or (and (boundp 'jr/org-directory) jr/org-directory) "~/rep/personal/org")
       org-default-notes-file (concat org-directory "/notes.org"))
 #+end_src
 
