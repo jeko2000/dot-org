@@ -578,8 +578,8 @@ template for gnus.
 Let's choose our refile targets, add a verify function and set refile
 settings.
 #+begin_src emacs-lisp :tangle yes
-(setq org-refile-targets '((nil :maxlevel . 4) ; nil = current buffer
-                           (org-agenda-files :maxlevel . 3)
+(setq org-refile-targets '((nil :maxlevel . 1) ; nil = current buffer
+                           (org-agenda-files :maxlevel . 1)
                            (org-agenda-files :tag . "PROJECT")))
 
 (defun jr/org-verify-refile-target ()
