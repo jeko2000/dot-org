@@ -341,9 +341,10 @@ I find that having only three priorities is a bit limiting. Let's
 configure a wider range of possible priorities that may be used.
 #+begin_src emacs-lisp :tangle yes
 (setq org-highest-priority 65
-      org-lowest-priority 69
-      org-default-priority 67)
 #+end_src
+      org-lowest-priority 67
+      org-default-priority 66)
+
 
 * Tags
 ** Settings tags
