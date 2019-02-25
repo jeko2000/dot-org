@@ -665,8 +665,8 @@ Let's define a stuck project as a level 2 headline with no subtasks
 with TODO, NEXT, or STARTED.
 #+begin_src emacs-lisp :tangle yes
 (setq org-stuck-projects
-      '("+LEVEL=2/-DONE" ("TODO" "NEXT" "STARTED") nil ""))
 #+end_src
+      '("+PROJECT/-DONE" ("NEXT") nil ""))
 
 ** Custom views
 #+begin_src emacs-lisp :tangle yes
