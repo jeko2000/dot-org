@@ -281,6 +281,20 @@ enable a few more states useful in our workflow.
                   "PHONE" "MEETING")))
    #+end_src
 
+** Breaking tasks down into subtasks
+   The following code taken from the manual sets a task to DONE if its
+   subtasks are done. Furthermore, we set
+   org-hierarchical-todo-statistics to be recursive.
+   #+begin_src emacs-lisp :tangle yes
+(defun org-summary-todo (n-done n-not-done)
+  "Switch entry to DONE when all subentries are done, to PROJECT
+otherwise."
+  (let (org-log-done org-log-states)   ; turn off logging
+    (org-todo (if (= n-not-done 0) "DONE" "PROJECT"))))
+
+(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+(setq org-hierarchical-todo-statistics nil)
+   #+end_src
 
 ** Faces for TODO keywords
 Next, let's set specific faces for our custom todo keywords
