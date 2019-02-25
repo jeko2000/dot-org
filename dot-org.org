@@ -442,16 +442,17 @@ tasks to STARTED when they are first clocked-in outside the capture buffer.
 #+begin_src emacs-lisp :tangle yes
 (defun jr/clock-in-to-started (kw)
   "Return special todo keyword when outside org-capture-mode."
-  (unless (or (string-equal kw "STARTED")
+  (unless (or (string-equal kw "IN-PROGRESS")
+              (string-equal kw "NEXT")
               (and (boundp 'org-capture-mode)
                    org-capture-mode))
-    "STARTED"))
+    "IN-PROGRESS"))
 
 (setq org-clock-into-drawer t
       org-clock-out-remove-zero-time-clocks t
       org-clock-out-when-done t
-      org-clock-in-switch-to-state 'jr/clock-in-to-started)
 #+end_src
+      org-clock-in-switch-to-state 'jr/clock-in-to-in-progress)
 
 *** Resolving idle time
 Org has a feature I haven't used much that allows it to alert you
