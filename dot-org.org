@@ -670,12 +670,72 @@ with TODO, NEXT, or STARTED.
 
 ** Custom views
 #+begin_src emacs-lisp :tangle yes
+(defvar jr/org-agenda-custom-block-agenda-contents
+  '((agenda "" nil)
+    (tags "REFILE"
+          ((org-agenda-overriding-header "Tasks to Refile")
+           (org-tags-match-list-sublevels nil)))
+    (tags-todo "-CANCELLED/!"
+               ((org-agenda-overriding-header "Stuck Projects")
+                (org-agenda-skip-function 'jr/org-skip-non-stuck-projects)
+                (org-agenda-sorting-strategy
+                 '(category-keep))))
+    (tags-todo "-SOMEDAY-CANCELLED|!NEXT"
+               ((org-agenda-overriding-header (concat "Project Next Tasks"
+                                                      (if jr/org-agenda-todo-ignore-with-date
+                                                          ""
+                                                        " (including tasks with dates)")))
+                (org-agenda-skip-function 'jr/org-skip-non-project-child)
+                (org-agenda-todo-ignore-scheduled jr/org-agenda-todo-ignore-with-date)
+                (org-agenda-todo-ignore-deadlines jr/org-agenda-todo-ignore-with-date)
+                (org-agenda-todo-ignore-with-date jr/org-agenda-todo-ignore-with-date)
+                (org-tags-match-list-sublevels t)
+                (org-agenda-sorting-strategy
+                 '(todo-state-down effort-up category-keep))))
+    (tags-todo "-HOLD-CANCELLED-SOMEDAY/!"
+               ((org-agenda-overriding-header (concat "Projects"
+                                                      (if jr/org-agenda-todo-ignore-with-date
+                                                          ""
+                                                        " (including tasks with dates)")))
+                (org-agenda-skip-function 'jr/org-skip-non-projects)
+                (org-agenda-todo-ignore-scheduled jr/org-agenda-todo-ignore-with-date)
+                (org-agenda-todo-ignore-deadlines jr/org-agenda-todo-ignore-with-date)
+                (org-agenda-todo-ignore-with-date jr/org-agenda-todo-ignore-with-date)
+                (org-tags-match-list-sublevels 'indented)
+                (org-agenda-sorting-strategy
+                 '(category-keep))))
+    (tags-todo "-HOLD-CANCELLED-SOMEDAY/!"
+               ((org-agenda-overriding-header (concat "Singletons"
+                                                      (if jr/org-agenda-todo-ignore-with-date
+                                                          ""
+                                                        " (including tasks with dates)")))
+                (org-agenda-skip-function 'jr/org-skip-non-singletons)
+                (org-agenda-todo-ignore-scheduled jr/org-agenda-todo-ignore-with-date)
+                (org-agenda-todo-ignore-deadlines jr/org-agenda-todo-ignore-with-date)
+                (org-agenda-todo-ignore-with-date jr/org-agenda-todo-ignore-with-date)
+                (org-agenda-sorting-strategy
+                 '(category-keep))))
+    (tags-todo "-CANCELLED+WAITING-SOMEDAY|HOLD/!"
+               ((org-agenda-overriding-header "Waiting and Postponed Tasks")
+                (org-agenda-skip-function 'jr/org-skip-non-singletons)
+                (org-tags-match-list-sublevels nil)))
+
+    (tags "-REFILE/"
+          ((org-agenda-overriding-header "Tasks to Archive")
+           (org-agenda-skip-function 'jr/org-skip-non-archivable)))))
+
 (setq org-agenda-custom-commands
-      '(("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))
+      `(("T" "Agenda and all TODOs" ((agenda "") (alltodo "")))
         ("N" "Notes" tags "NOTE"
          ((org-agenda-overriding-header "NOTES")
+          (org-tags-match-list-sublevels t)))
+        ("h" "Habits" tags-todo "STYLE=\"habit\""
+         ((org-agenda-overriding-header "Habits")
           (org-agenda-sorting-strategy
-           '(alpha-up))))))
+           '(todo-state-down effort-up category-keep))))
+        (" " "Agenda"
+         ,jr/org-agenda-custom-block-agenda-contents
+         nil)))
 #+end_src
 
 * Markup
