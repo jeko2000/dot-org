@@ -481,12 +481,24 @@ First, we set up a few basic variables
 
 Next, we set up the actual templates
 #+begin_src emacs-lisp :tangle yes
-(defconst jr/org-basic-scheduled-task
+(defconst jr/org-basic-unscheduled-task
   "* TODO %^{Task}
-  SCHEDULED: %t
   :PROPERTIES:
   :Effort: %^{effort|1:00|0:05|0:15|0:30|0:45|2:00|3:00|4:00|5:00|6:00}
   :END:\n%U\n%?\n%i\n%a\n" "Basic task data suggested by Sasha Chua")
+
+(defconst jr/org-basic-scheduled-task
+  "* TODO %^{Task}
+  SCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a>>\")
+  :PROPERTIES:
+  :Effort: %^{effort|1:00|0:05|0:15|0:30|0:45|2:00|3:00|4:00|5:00|6:00}
+  :END:\n%U\n%?\n%i\n%a\n" "Basic scheduled template")
+
+(defconst jr/org-basic-unscheduled-project-task
+  "* NEXT %^{Task}
+  :PROPERTIES:
+  :Effort: %^{effort|1:00|0:05|0:15|0:30|0:45|2:00|3:00|4:00|5:00|6:00}
+  :END:\n%U\n%?\n%i\n%a\n" "Capture template for project tasks")
 
 (defconst jr/org-habit-task
   "* NEXT %? :HABIT:
@@ -496,28 +508,47 @@ Next, we set up the actual templates
   :REPEAT_TO_STATE: NEXT
   :END:\n%U\n%a\n" "Capture template for habits")
 
+(defconst jr/org-project-task
+  "* PROJECT [%] %^{Project} :PROJECT:
+  :PROPERTIES:
+  :Effort: %^{effort|2:00|4:00|5:00|8:00|10:00}
+  :END:\n%U\n%?\n%i\n%a\n" "Capture template for projects")
+
+(defconst jr/org-offer-task
+  "* TODO %^{Offer}
+  DEADLINE: %(format-time-string \"%<<%Y-%m-%d %a>>\")
+  \n%U\n%?\n%i\n%a\n" "Capture template for offers")
+
 (setq org-capture-templates
-      `(("t" "todo" entry (file "refile.org")
+      `(("P" "project head" entry (file "refile.org")
+         ,jr/org-project-task :clock-in t :clock-resume t)
+        ("p" "project task" entry (file "refile.org")
+         ,jr/org-basic-unscheduled-project-task :clock-in t :clock-resume t)
+        ("t" "standalone" entry (file "refile.org")
+         ,jr/org-basic-unscheduled-task :clock-in t :clock-resume t)
+        ("n" "scheduled standalone" entry (file "refile.org")
          ,jr/org-basic-scheduled-task :clock-in t :clock-resume t)
         ("f" "family" entry (file+headline "family.org" "Family tasks")
-         ,jr/org-basic-scheduled-task :clock-in t :clock-resume t)
+         ,jr/org-basic-unscheduled-task :clock-in t :clock-resume t)
         ("r" "respond" entry (file "refile.org")
          "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
          :clock-in t :clock-resume t :immediate-finish t)
+        ("o" "offers" entry (file "offers.org")
+         ,jr/org-offer-task)
         ("n" "note" entry (file+headline "notes.org" "References")
          "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
         ("h" "habit" entry (file "refile.org")
          ,jr/org-habit-task :clock-in t :clock-resume t)
         ("i" "interrupting task" entry (file "refile.org")
-         "* STARTED %^{Task}\n   SCHEDULED: %t\n%a"
+         "* IN-PROGRESS %^{Task}\n   SCHEDULED: %t\n%a"
          :clock-in t :clock-keep t)
-        ("m" "meeting" entry (file "refile.org")
-         "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
         ("w" "org-protocol" entry (file "refile.org")
-         "* TODO Review %:description\n   SCHEDULED: %t\nSource: %:link\n\n"
+         "* TODO Review %:description\n   Source: %:link\n\n"
          :immediate-finish t)
         ("s" "someday" entry (file+headline "someday.org" "Someday tasks")
          "* %? :SOMEDAY:\n%U\n%a\n" :clock-in t :clock-resume t)
+        ("m" "meeting" entry (file "refile.org")
+         "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
         ("p" "phone call" entry (file "refile.org")
          "* PHONE call with %? :PHONE:\n%U" :clock-in t :clock-resume t)))
 #+end_src
