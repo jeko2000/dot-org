@@ -345,6 +345,18 @@ configure a wider range of possible priorities that may be used.
       org-lowest-priority 67
       org-default-priority 66)
 
+** Other
+   #+begin_src emacs-lisp :tangle yes
+(setq org-todo-state-tags-triggers
+      (quote (("CANCELLED" ("CANCELLED" . t))
+              ("WAITING" ("WAITING" . t))
+              ("HOLD" ("WAITING" . t) ("HOLD" . t))
+              (done ("WAITING") ("HOLD") ("PROJECT"))
+              ("PROJECT" ("PROJECT" . t))
+              ("TODO" ("WAITING") ("CANCELLED") ("HOLD") ("PROJECT"))
+              ("NEXT" ("WAITING") ("CANCELLED") ("HOLD") ("PROJECT"))
+              ("DONE" ("WAITING") ("CANCELLED") ("HOLD") ("PROJECT")))))
+   #+end_src
 
 * Tags
 ** Settings tags
