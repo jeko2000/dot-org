@@ -888,6 +888,26 @@ as it doesn’t pad source blocks with leading spaces.
       (org-agenda nil "a")))
   (delete-other-windows))
 
+(defun jr/org-show-block-agenda ()
+  "Show the block agenda buffer in a full frame creating it if needed."
+  (interactive)
+  (let ((agenda-buffer-name
+         (if org-agenda-sticky "*Org Agenda( )*" "*Org Agenda*")))
+    (if (get-buffer agenda-buffer-name)
+        (switch-to-buffer agenda-buffer-name)
+      (org-agenda nil " ")))
+  (delete-other-windows))
+
+(defun jr/org-show-block-agenda-without-dated-items ()
+  (interactive)
+  (let ((jr/org-agenda-todo-ignore-with-date t))
+    (jr/org-show-block-agenda)))
+
+(defun jr/org-show-block-agenda-with-dated-items ()
+  (interactive)
+  (let ((jr/org-agenda-todo-ignore-with-date nil))
+    (jr/org-show-block-agenda)))
+
 (defun jr/clock-in-last (arg)
   "Clock in the most recently clocked task.
 If the clock is already active, do nothing but print a message.
@@ -906,6 +926,8 @@ tasks to clock into."
 (global-set-key (kbd "<f12>") 'org-agenda)
 
 (global-set-key (kbd "<f9> <f9>") 'jr/org-show-agenda)
+(global-set-key (kbd "<f9> <f10>") 'jr/org-show-block-agenda-without-dated-items)
+(global-set-key (kbd "<f9> <f8>") 'jr/org-show-block-agenda-with-dated-items)
 (global-set-key (kbd "<f9> b") 'bbdb)
 (global-set-key (kbd "<f9> c") 'calendar)
 (global-set-key (kbd "<f9> t l") 'org-toggle-link-display)
