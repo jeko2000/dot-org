@@ -17,6 +17,158 @@ Then, we ensure that emacs recognizes .org, .org_archive, and even
 #+begin_src emacs-lisp :tangle yes
 (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 #+end_src
+** Helpers
+   #+begin_src emacs-lisp :tangle yes
+(defvar jr/org-project-keywords '("PROJECT") "List of todo keywords denoting a task as a project.")
+(defvar jr/org-project-next-action-keywords '("NEXT") "List of todo keywords denoting a next action.")
+(defvar jr/org-old-entries-day-threshold 30 "Number of days after
+which a 'DONE' task is considered old and archivable.")
+(defvar jr/org-agenda-todo-ignore-with-date t)
+
+(defun jr/org-get-todo-state-safe ()
+  "Return nil of point is before the first visible heading or
+the value after calling `org-get-todo-state' otherwise."
+  (and (not (org-before-first-heading-p))
+       (org-get-todo-state)))
+
+(defun jr/org-entry-is-task-p ()
+  "Return non-nil if entry state is present in
+`org-todo-keywords-1'"
+  (member (jr/org-get-todo-state-safe) org-todo-keywords-1))
+
+(defun jr/org-entry-is-next-p ()
+  "Return non-nil if entry state is present in
+`jr/org-project-next-action-keywords'"
+  (member (jr/org-get-todo-state-safe) jr/org-project-next-action-keywords))
+
+(defun jr/org-entry-has-subtask-p ()
+  "Return non-nil if at least of the current entry's children is
+itself a todo-task."
+  (let (has-subtasks)
+    (save-restriction
+      (widen)
+      (save-excursion
+        (let ((current-level (org-current-level)))
+          (when current-level
+            (outline-next-heading)
+            (while (and (not has-subtasks)
+                        (not (eobp))
+                        (< current-level (org-current-level)))
+              (setq has-subtasks (jr/org-entry-is-task-p))
+              (outline-next-heading)))))
+      has-subtasks)))
+
+(defun jr/org-entry-is-project-p ()
+  "Return non-nil if entry is a project. Currently, a project is
+simply a todo entry whose state is in `jr/org-project-keywords' or
+one who has at least one children task."
+  (and (jr/org-entry-is-task-p)
+       (or
+        (member (jr/org-get-todo-state-safe) jr/org-project-keywords)
+        (jr/org-entry-has-subtask-p))))
+
+(defun jr/org-entry-is-singleton-p ()
+  "Return non-nil if entry is a singleton task. That is, a
+non-project task."
+  (and (jr/org-entry-is-task-p)
+       (not (jr/org-entry-is-project-p))))
+
+(defun jr/org-entry-is-project-child-p ()
+  "Return non-nil if entry a child of some parent project."
+  (save-restriction
+    (widen)
+    (save-excursion
+      (when (org-up-heading-safe)
+        (jr/org-entry-is-task-p)))))
+
+(defun jr/org-project-stuck-p ()
+  "Return non-nil if entry is a project and it is stuck. That is,
+no children are next tasks."
+  (when (jr/org-entry-is-project-p)
+    (let (has-next)
+      (save-restriction
+        (widen)
+        (save-excursion
+          (let ((current-level (org-current-level)))
+            (when current-level
+              (outline-next-heading)
+              (while (and (not has-next)
+                          (not (eobp))
+                          (< current-level (org-current-level)))
+                (setq has-next (jr/org-entry-is-next-p))
+                (org-get-next-sibling)))))
+        (not has-next)))))
+
+(defun jr/org-get-closed-timestamp-string ()
+  (org-entry-get (point) "CLOSED"))
+
+(defun jr/org-timestamp-archivably-old-p (timestamp-string)
+  (>
+   (- (time-to-days (current-time))
+      (time-to-days (org-time-string-to-time timestamp-string)))
+   jr/org-old-entries-day-threshold))
+
+(defun jr/org-get-next-heading-point ()
+  (save-restriction
+    (widen)
+    (save-excursion (or (outline-next-heading) (point-max)))))
+
+(defun jr/org-entry-archivable-p ()
+  (let ((timestamp-string (jr/org-get-closed-timestamp-string)))
+    (and timestamp-string
+         (jr/org-timestamp-archivably-old-p timestamp-string))))
+
+(defun jr/org-skip-stuck-projects ()
+  (when (jr/org-project-stuck-p)
+    (jr/org-get-next-heading-point)))
+
+(defun jr/org-skip-non-stuck-projects ()
+  (when (not (jr/org-project-stuck-p))
+    (jr/org-get-next-heading-point)))
+
+(defun jr/org-skip-projects ()
+  (when (jr/org-entry-is-project-p)
+    (jr/org-get-next-heading-point)))
+
+(defun jr/org-skip-non-projects ()
+  (when (not (jr/org-entry-is-project-p))
+    (jr/org-get-next-heading-point)))
+
+(defun jr/org-skip-singletons ()
+  (when (jr/org-entry-is-singleton-p)
+    (jr/org-get-next-heading-point)))
+
+(defun jr/org-skip-non-singletons ()
+  (when (not (jr/org-entry-is-singleton-p))
+    (jr/org-get-next-heading-point))  )
+
+(defun jr/org-skip-archivable ()
+  (when (jr/org-entry-archivable-p)
+    (jr/org-get-next-heading-point)))
+
+(defun jr/org-skip-non-archivable ()
+  (when (not (jr/org-entry-archivable-p))
+    (jr/org-get-next-heading-point)))
+
+(defun jr/org-skip-project-child ()
+  (when (jr/org-entry-is-project-child-p)
+    (jr/org-get-next-heading-point)))
+
+(defun jr/org-skip-non-project-child ()
+  (when (not (jr/org-entry-is-project-child-p))
+    (jr/org-get-next-heading-point)))
+
+(defun jr/org-singleton->project ()
+  (interactive)
+  (when (org-at-heading-p))
+  (org-todo "PROJECT")
+  (org-set-tags "PROJECT" t)
+  (let ((old-headline (nth 4 (org-heading-components))))
+    (org-edit-headline
+     (if (string-match "\\[%\\]" old-headline)
+         old-headline
+       (concat "[%] " old-headline)))))
+   #+end_src
 
 * Document structure
 ** Headlines
