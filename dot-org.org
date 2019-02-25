@@ -301,12 +301,13 @@ Next, let's set specific faces for our custom todo keywords
 #+begin_src emacs-lisp :tangle yes
 (setq org-todo-keyword-faces
       '(("TODO" . (:foreground "firebrick" :weight bold :box nil))
-        ("STARTED" . (:foreground "DarkOrange3" :weight bold :box nil))
+        ("IN-PROGRESS" . (:foreground "DarkOrange3" :weight bold :box nil))
+        ("TODO" . (:foreground "firebrick" :weight bold :box nil))
         ("NEXT" . (:foreground "olive drab" :weight bold :box nil))
         ("WAITING" . (:foreground "steel blue" :weight bold :box nil))
         ("HOLD" . (:foreground "orchid" :weight bold :box nil))
         ("DONE" . (:foreground "dim gray" :strike-through t))
-        ("CANCELED" . (:foreground "dim gray" :strike-through t))
+        ("CANCELLED" . (:foreground "dim gray" :strike-through t))
         ("PHONE" . (:foreground "dim gray"))
         ("MEETING" . (:foreground "dim gray"))))
 #+end_src
