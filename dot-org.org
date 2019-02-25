@@ -311,6 +311,12 @@ Next, let's set specific faces for our custom todo keywords
         ("PHONE" . (:foreground "dim gray"))
         ("MEETING" . (:foreground "dim gray"))))
 #+end_src
+** To Do Dependencies
+   It is useful to prevent parent tasks to be marked as done if children
+   tasks are unresolved.
+   #+begin_src emacs-lisp :tangle yes
+(setq org-enforce-todo-dependencies t)
+   #+end_src
 
 ** Progress logging
 *** Closing items
