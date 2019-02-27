@@ -347,9 +347,9 @@ otherwise."
    configure a wider range of possible priorities that may be used.
    #+begin_src emacs-lisp :tangle yes
 (setq org-highest-priority 65
+      org-lowest-priority 67
+      org-default-priority 66)
    #+end_src
-   org-lowest-priority 67
-   org-default-priority 66)
 
 ** Other
    #+begin_src emacs-lisp :tangle yes
@@ -457,8 +457,8 @@ otherwise."
 (setq org-clock-into-drawer t
       org-clock-out-remove-zero-time-clocks t
       org-clock-out-when-done t
+      org-clock-in-switch-to-state 'jr/clock-in-to-in-progress)
     #+end_src
-    org-clock-in-switch-to-state 'jr/clock-in-to-in-progress)
 
 *** Resolving idle time
     Org has a feature I haven't used much that allows it to alert you
@@ -671,8 +671,9 @@ Taken from http://doc.norang.ca/org-mode.html"
     with TODO, NEXT, or STARTED.
     #+begin_src emacs-lisp :tangle yes
 (setq org-stuck-projects
+      '("+PROJECT/-DONE" ("NEXT") nil ""))
     #+end_src
-    '("+PROJECT/-DONE" ("NEXT") nil ""))
+
 
 ** Custom views
    #+begin_src emacs-lisp :tangle yes
