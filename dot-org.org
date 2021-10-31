@@ -481,7 +481,7 @@ otherwise."
    First, we set up a few basic variables
    #+begin_src emacs-lisp :tangle yes
 
-(setq org-directory (or (and (boundp 'jr/org-directory) jr/org-directory) "~/rep/personal/org")
+(setq org-directory (or (and (boundp 'jr/org-directory) jr/org-directory) "~/org")
       org-default-notes-file (concat org-directory "/notes.org"))
    #+end_src
 
