@@ -532,8 +532,6 @@ otherwise."
          ,jr/org-basic-unscheduled-project-task :clock-in t :clock-resume t)
         ("t" "standalone" entry (file "refile.org")
          ,jr/org-basic-unscheduled-task :clock-in t :clock-resume t)
-        ("n" "scheduled standalone" entry (file "refile.org")
-         ,jr/org-basic-scheduled-task :clock-in t :clock-resume t)
         ("f" "family" entry (file+headline "family.org" "Family tasks")
          ,jr/org-basic-unscheduled-task :clock-in t :clock-resume t)
         ("r" "respond" entry (file "refile.org")
