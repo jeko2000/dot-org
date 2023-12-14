@@ -838,7 +838,6 @@ Taken from http://doc.norang.ca/org-mode.html"
    (js . t)
    (octave . t)
    (latex . t)
-   (ledger . t)
    (lisp . t)
    (org . t)
    (python . t)
